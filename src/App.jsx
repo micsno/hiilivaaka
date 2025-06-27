@@ -1,29 +1,22 @@
-// src/App.jsx
-import React, { useState } from "react";
+import { useState } from "react";
+import Header from "./Header";
 import Questionnaire from "./Questionnaire";
 import Result from "./Result";
+import TipsPopup from "./TipsPopup";
 import './styles.css';
 
-export default function App() {
+function App() {
   const [answers, setAnswers] = useState({});
   const [score, setScore] = useState(null);
+  const [showTips, setShowTips] = useState(false);
 
   const calculateScore = (data) => {
     const factors = {
       diet: { meat: 2500, vegetarian: 1500, vegan: 800, mixed: 2000 },
       drivingDistance: {
-        low: 1000, // Low driving distance
-        "medium-low": 2500, // Medium-low driving distance
-        "medium-high": 3500,  // Medium-high driving distance
-        high: 4500,  // High driving distance
-        "very-high": 6000,  // Very high driving distance
+        low: 1000, "medium-low": 2500, "medium-high": 3500, high: 4500, "very-high": 6000,
       },
-      fuelType: {
-        gasoline: 4000, // Gasoline
-        diesel: 5000,   // Diesel
-        gas: 2000,      // Gas
-        electric: 0,    // Electric
-      },
+      fuelType: { gasoline: 4000, diesel: 5000, gas: 2000, electric: 0 },
       flying: { none: 0, some: 1100, frequent: 3000 },
       housing: { apartment: 1200, townhouse: 1800, house: 2500, maisonette: 2000 },
       electricity: (value) => {
@@ -44,20 +37,28 @@ export default function App() {
       factors.fuelType[data.fuelType] +
       factors.flying[data.flying] +
       factors.housing[data.housing] +
-      factors.electricity(data.electricity);
+      factors.electricity(Number(data.electricity));
 
     setScore(total);
     setAnswers(data);
   };
 
   return (
-    <div className="container">
-      <h1>🌱 Hiilijalanjälkilaskuri</h1>
-      {!score ? (
-        <Questionnaire onSubmit={calculateScore} />
-      ) : (
-        <Result score={score} onReset={() => setScore(null)} answers={answers} />
-      )}
+    <div>
+      <Header onShowTips={() => setShowTips(true)} />
+      <div className="container">
+        <h1>🌱 Hiilijalanjälkilaskuri</h1>
+
+        {!score ? (
+          <Questionnaire onSubmit={calculateScore} />
+        ) : (
+          <Result score={score} onReset={() => setScore(null)} answers={answers} />
+        )}
+      </div>
+
+      {showTips && <TipsPopup onClose={() => setShowTips(false)} />}
     </div>
   );
 }
+
+export default App;

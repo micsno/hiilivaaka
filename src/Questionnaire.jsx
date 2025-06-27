@@ -1,82 +1,94 @@
-// src/Questionnaire.jsx
 import React, { useState } from "react";
 
-export default function Questionnaire({ onSubmit }) {
-    const [diet, setDiet] = useState("meat");
-    const [drivingDistance, setDrivingDistance] = useState("low");
-    const [fuelType, setFuelType] = useState("gasoline");
-    const [flying, setFlying] = useState("none");
-    const [housing, setHousing] = useState("apartment");
-    const [electricity, setElectricity] = useState(3000);
+function Questionnaire({ onSubmit }) {
+  const [formData, setFormData] = useState({
+    diet: "",
+    drivingDistance: "",
+    fuelType: "",
+    flying: "",
+    housing: "",
+    electricity: 0,
+  });
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        console.log("Lomake lähetetty", { diet, drivingDistance, fuelType, flying, housing, electricity });
-        onSubmit({ diet, drivingDistance, fuelType, flying, housing, electricity });
-    };
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
-    const handleElectricityChange = (e) => {
-        const newElectricity = Number(e.target.value);
-        setElectricity(newElectricity);
-    };
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSubmit(formData);
+  };
 
-    return (
-        <form onSubmit={handleSubmit}>
-            <label>Ruokavalio</label>
-            <select value={diet} onChange={(e) => setDiet(e.target.value)}>
-                <option value="meat">Liha</option>
-                <option value="vegetarian">Kasvis</option>
-                <option value="vegan">Vegaani</option>
-                <option value="mixed">Sekaruokavalio</option>
-            </select>
+  return (
+    <form onSubmit={handleSubmit}>
+      <div><label>Ruokavalio</label>
+        <select name="diet" onChange={handleChange} required>
+          <option value="">Valitse...</option>
+          <option value="meat">Sekasyöjä</option>
+          <option value="vegetarian">Kasvissyöjä</option>
+          <option value="vegan">Vegaani</option>
+          <option value="mixed">Sekoitus</option>
+        </select>
+      </div>
 
-            <label>Ajotapa (kilometrit vuodessa)</label>
-            <select value={drivingDistance} onChange={(e) => setDrivingDistance(e.target.value)}>
-                <option value="low">Alle 5000 km</option>
-                <option value="medium-low">5000–15000 km</option>
-                <option value="medium-high">15000–20000 km</option>
-                <option value="high">20000–30000 km</option>
-                <option value="very-high">Yli 30000 km</option>
-            </select>
+      <div><label>Ajomatka</label>
+        <select name="drivingDistance" onChange={handleChange} required>
+          <option value="">Valitse...</option>
+          <option value="low">Alle 5 km/päivä</option>
+          <option value="medium-low">5–15 km</option>
+          <option value="medium-high">15–30 km</option>
+          <option value="high">30–50 km</option>
+          <option value="very-high">Yli 50 km</option>
+        </select>
+      </div>
 
-            <label>Auton polttoaine</label>
-            <select value={fuelType} onChange={(e) => setFuelType(e.target.value)}>
-                <option value="gasoline">Bensiini</option>
-                <option value="diesel">Diesel</option>
-                <option value="gas">Kaasu</option>
-                <option value="electric">Sähköauto</option>
-            </select>
+      <div><label>Polttoaine</label>
+        <select name="fuelType" onChange={handleChange} required>
+          <option value="">Valitse...</option>
+          <option value="gasoline">Bensiini</option>
+          <option value="diesel">Diesel</option>
+          <option value="gas">Kaasu</option>
+          <option value="electric">Sähkö</option>
+        </select>
+      </div>
 
-            <label>Lennot</label>
-            <select value={flying} onChange={(e) => setFlying(e.target.value)}>
-                <option value="none">Ei</option>
-                <option value="some">Jonkin verran</option>
-                <option value="frequent">Usein</option>
-            </select>
+      <div><label>Lentäminen</label>
+        <select name="flying" onChange={handleChange} required>
+          <option value="">Valitse...</option>
+          <option value="none">Ei lainkaan</option>
+          <option value="some">Joissakin tapauksissa</option>
+          <option value="frequent">Usein</option>
+        </select>
+      </div>
 
-            <label>Asunto</label>
-            <select value={housing} onChange={(e) => setHousing(e.target.value)}>
-                <option value="apartment">Kerrostalo</option>
-                <option value="townhouse">Rivitalo</option>
-                <option value="house">Omakotitalo</option>
-                <option value="maisonette">Luhtitalo</option>
-            </select>
+      <div><label>Asuminen</label>
+        <select name="housing" onChange={handleChange} required>
+          <option value="">Valitse...</option>
+          <option value="apartment">Kerrostalo</option>
+          <option value="townhouse">Rivitalo</option>
+          <option value="house">Omakotitalo</option>
+          <option value="maisonette">Paritalo</option>
+        </select>
+      </div>
 
-            <label>Sähkönkulutus (kWh/vuosi)</label>
-            <div className="range-container">
-                <input
-                    type="range"
-                    min="0"
-                    max="25000"
-                    step="100"
-                    value={electricity}
-                    onChange={handleElectricityChange}
-                />
+      <div>
+        <label>Sähkönkulutus (kWh/vuosi)</label>
+        <input
+          type="range"
+          name="electricity"
+          min="0"
+          max="20000"
+          step="500"
+          value={formData.electricity}
+          onChange={handleChange}
+        />
+        <span>{formData.electricity} kWh</span>
+      </div>
 
-                <span>{electricity} kWh</span>
-            </div>
-
-            <button type="submit">Laske hiilijalanjälki</button>
-        </form>
-    );
+      <button type="submit">Laske</button>
+    </form>
+  );
 }
+
+export default Questionnaire;
